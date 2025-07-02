@@ -1,15 +1,12 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { UserRole } from './role.entity';
 
 @Entity()
 export class User {
+  static factory(partial: Partial<User>) {
+    return Object.assign(new User(), partial);
+  }
+
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

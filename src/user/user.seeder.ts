@@ -10,24 +10,36 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export default class UserSeederService {
   constructor(
-    @InjectRepository(User) private _repo: Repository<User>,
+    @InjectRepository(User) private _userRepo: Repository<User>,
+    @InjectRepository(UserRole) private _rolesRepo: Repository<UserRole>,
     private _configService: ConfigService,
   ) {}
 
   public async exec() {
-    let admin = await this._repo.findOneBy({ role: { id: ROLES.ADMIN } });
-    if (!admin) {
-      const role = Object.assign(new UserRole(), { id: ROLES.ADMIN });
-      const { email, password } = this._configService.ADMIN_USER;
-      admin = Object.assign(new User(), {
-        email,
-        role,
-        firstName: 'admin',
-        lastName: '',
-        password: await bcrypt.hash(password, PASSWORD_HASH_SALT_ROUND),
-      });
+    await this._seedRoles();
+    await this._seedUsers();
+  }
 
-      await this._repo.insert(admin);
-    }
+  private async _seedRoles() {
+    await this._rolesRepo.save([
+      UserRole.factory({ id: 1, name: 'admin' }),
+      UserRole.factory({ id: 2, name: 'regular' }),
+    ]);
+  }
+
+  private async _seedUsers() {
+    let admin = await this._userRepo.findOneBy({ role: { id: ROLES.ADMIN } });
+    if (admin) return;
+
+    const { email, password } = this._configService.ADMIN_USER;
+    admin = User.factory({
+      email,
+      role: UserRole.factory({ id: ROLES.ADMIN }),
+      firstName: 'admin',
+      lastName: '',
+      password: await bcrypt.hash(password, PASSWORD_HASH_SALT_ROUND),
+    });
+
+    await this._userRepo.insert(admin);
   }
 }

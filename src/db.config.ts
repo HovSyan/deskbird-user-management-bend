@@ -1,9 +1,5 @@
 import { Injectable, Module } from '@nestjs/common';
-import {
-  TypeOrmModule,
-  TypeOrmModuleOptions,
-  TypeOrmOptionsFactory,
-} from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 import { User } from './user/entities/user.entity';
 import { UserRole } from './user/entities/role.entity';
 import { ConfigModule, ConfigService } from './app.config';
@@ -18,6 +14,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       entities: [User, UserRole],
       synchronize: true,
       logging: ['error'],
+      ssl: true,
       ...this._configService.DB_CONNECTION_OBJECT,
     };
   }
