@@ -23,6 +23,13 @@ export class ConfigService extends Nest.ConfigService {
       expiresIn: this.getOrThrow<string>('JWT_EXPIRES_IN'),
     };
   }
+
+  get ADMIN_USER() {
+    return {
+      email: this.getOrThrow<string>('ADMIN_USER_EMAIL'),
+      password: this.getOrThrow<string>('ADMIN_USER_PASSWORD'),
+    };
+  }
 }
 
 @Global()

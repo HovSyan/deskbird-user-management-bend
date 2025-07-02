@@ -41,9 +41,7 @@ export class UserService {
   findByEmailWithCredentials(email: string) {
     return this._repo.findOne({
       where: { email },
-      select: this._repo.metadata.columns.map(
-        (col) => col.propertyName as keyof User,
-      ),
+      select: this._repo.metadata.columns.map((col) => col.propertyName as keyof User),
     });
   }
 }
