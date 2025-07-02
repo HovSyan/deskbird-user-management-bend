@@ -1,14 +1,24 @@
 import { Body, Controller, Post, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { SignInDto } from './dto/sign-in.dto';
+import { SignUpDto } from './dto/sign-up.dto';
+import { UserService } from 'src/user/user.service';
 
-@Controller('auth')
+@Controller('api/v1/auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private _authService: AuthService,
+    private _userService: UserService,
+  ) {}
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  signIn(@Body() signInDto: Record<string, any>) {
-    // TODO: validation chapter
-    return this.authService.signIn(signInDto.username, signInDto.password);
+  signIn(@Body() { username, password }: SignInDto) {
+    return this._authService.signIn(username, password);
+  }
+
+  @Post('register')
+  signUp(@Body() dto: SignUpDto) {
+    return this._userService.create(dto);
   }
 }

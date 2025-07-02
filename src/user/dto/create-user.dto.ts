@@ -5,7 +5,7 @@ const passwordRegEx =
 
 export class CreateUserDto {
   @IsNotEmpty()
-  @IsEmail(undefined, { message: 'Invalid email' })
+  @IsEmail()
   email: string;
 
   @IsString()

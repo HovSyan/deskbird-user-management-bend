@@ -25,8 +25,8 @@ export class User {
   @Column({ type: 'varchar', select: false })
   password?: string;
 
-  @ManyToOne(() => UserRole, (role) => role.name, { nullable: false })
-  role: UserRole['name'];
+  @ManyToOne(() => UserRole, { nullable: false, eager: true })
+  role: UserRole;
 
   @CreateDateColumn({
     type: 'timestamp',
