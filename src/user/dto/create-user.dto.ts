@@ -1,10 +1,9 @@
 import { IsEmail, IsNotEmpty, IsString, Matches } from 'class-validator';
 
 const passwordRegEx =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&])[A-Za-zd@$!%*?&]{8,}$/;
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 export class CreateUserDto {
-  @IsNotEmpty()
   @IsEmail()
   email: string;
 
@@ -16,7 +15,6 @@ export class CreateUserDto {
   @IsNotEmpty()
   lastName: string;
 
-  @IsNotEmpty()
   @Matches(passwordRegEx, {
     message: `Password must contain minimum 8, 
     at least one uppercase letter, 

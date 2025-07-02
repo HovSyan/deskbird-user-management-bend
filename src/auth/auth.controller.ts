@@ -13,8 +13,8 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  signIn(@Body() { username, password }: SignInDto) {
-    return this._authService.signIn(username, password);
+  signIn(@Body() { email, password }: SignInDto) {
+    return this._authService.signIn(email, password);
   }
 
   @Post('register')

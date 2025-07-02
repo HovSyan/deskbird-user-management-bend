@@ -12,8 +12,8 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signIn(username: string, pass: string) {
-    const user = await this.userService.findByEmailWithCredentials(username);
+  async signIn(email: string, pass: string) {
+    const user = await this.userService.findByEmailWithCredentials(email);
     const match = await (!!user && bcrypt.compare(pass, user.password!));
     if (!match || !user) {
       throw new UnauthorizedException();

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
@@ -6,24 +6,28 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { PASSWORD_HASH_SALT_ROUND, ROLES } from 'src/constants';
 import { UserRole } from './entities/role.entity';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
   constructor(@InjectRepository(User) private _repo: Repository<User>) {}
 
-  async create(createUserDto: CreateUserDto) {
-    const user = new User();
-    const role = new UserRole();
-    user.email = createUserDto.email;
-    user.firstName = createUserDto.firstName;
-    user.lastName = createUserDto.lastName;
-    user.password = await bcrypt.hash(
-      createUserDto.password,
-      PASSWORD_HASH_SALT_ROUND,
-    );
-    role.id = ROLES.REGULAR;
-    user.role = role;
+  async create(dto: CreateUserDto) {
+    const role = Object.assign(new UserRole(), { id: ROLES.REGULAR });
+    const password = await bcrypt.hash(dto.password, PASSWORD_HASH_SALT_ROUND);
+    const user = Object.assign(new User(), {
+      ...dto,
+      role,
+      password,
+    });
     return void (await this._repo.insert(user));
+  }
+
+  async update(id: User['id'], dto: UpdateUserDto) {
+    const result = await this._repo.update({ id }, dto);
+    if (result.affected === 0) {
+      throw new NotFoundException(`A user with ${id} not found`);
+    }
   }
 
   findAll() {
