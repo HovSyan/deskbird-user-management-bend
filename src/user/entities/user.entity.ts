@@ -13,7 +13,7 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Column({ type: 'varchar', length: 100, unique: true })
   email: string;
 
   @Column({ type: 'varchar', name: 'first_name', length: 255 })
@@ -22,8 +22,8 @@ export class User {
   @Column({ type: 'varchar', name: 'last_name', length: 255 })
   lastName: string;
 
-  @Column({ type: 'varchar' })
-  password: string;
+  @Column({ type: 'varchar', select: false })
+  password?: string;
 
   @ManyToOne(() => UserRole, (role) => role.name, { nullable: false })
   role: UserRole['name'];

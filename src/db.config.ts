@@ -1,24 +1,34 @@
-import { Injectable } from '@nestjs/common';
-import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
-import { ConfigService } from '@nestjs/config';
+import { Injectable, Module } from '@nestjs/common';
+import {
+  TypeOrmModule,
+  TypeOrmModuleOptions,
+  TypeOrmOptionsFactory,
+} from '@nestjs/typeorm';
 import { User } from './user/entities/user.entity';
 import { UserRole } from './user/entities/role.entity';
+import { ConfigModule, ConfigService } from './app.config';
 
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
-  constructor(private configService: ConfigService) {}
+  constructor(private _configService: ConfigService) {}
 
   createTypeOrmOptions(): TypeOrmModuleOptions {
     return {
       type: 'postgres',
-      host: this.configService.getOrThrow('DB_HOST'),
-      port: +this.configService.getOrThrow('DB_PORT')!,
-      username: this.configService.getOrThrow('DB_NAME'),
-      password: this.configService.getOrThrow('DB_PASSWORD'),
-      database: this.configService.getOrThrow('DB_DATABASE'),
       entities: [User, UserRole],
       synchronize: true,
-      logging: true,
+      logging: ['error'],
+      ...this._configService.DB_CONNECTION_OBJECT,
     };
   }
 }
+
+@Module({
+  imports: [
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useClass: TypeOrmConfigService,
+    }),
+  ],
+})
+export class DBConnectionModule {}
