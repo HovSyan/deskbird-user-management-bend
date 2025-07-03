@@ -3,6 +3,10 @@ import * as Nest from '@nestjs/config';
 
 @Injectable()
 export class ConfigService extends Nest.ConfigService {
+  get IS_PRODUCTION() {
+    return this.getOrThrow('NODE_ENV') === 'production';
+  }
+
   get PORT() {
     return this.get<string>('PORT');
   }

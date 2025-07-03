@@ -14,7 +14,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       entities: [User, UserRole],
       synchronize: true,
       logging: ['error'],
-      ssl: true,
+      ssl: this._configService.IS_PRODUCTION,
       ...this._configService.DB_CONNECTION_OBJECT,
     };
   }
