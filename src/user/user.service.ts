@@ -35,7 +35,7 @@ export class UserService {
     }
 
     findById(id: string) {
-        return this._repo.findBy({ id });
+        return this._repo.findOneBy({ id });
     }
 
     findByEmail(email: string) {

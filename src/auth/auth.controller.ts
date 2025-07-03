@@ -27,6 +27,12 @@ export class AuthController {
         return response.json(user);
     }
 
+    @Post('logout')
+    logout(@Res() response: Response) {
+        response.clearCookie(ACCESS_TOKEN);
+        return response.status(HttpStatus.OK).send();
+    }
+
     @Post('register')
     signUp(@Body() dto: SignUpDto) {
         return this._userService.create(dto);
