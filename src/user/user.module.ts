@@ -7,15 +7,15 @@ import UserSeederService from './user.seeder';
 import { UserRole } from './entities/role.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, UserRole])],
-  controllers: [UserController],
-  providers: [UserService, UserSeederService],
-  exports: [UserService],
+    imports: [TypeOrmModule.forFeature([User, UserRole])],
+    controllers: [UserController],
+    providers: [UserService, UserSeederService],
+    exports: [UserService],
 })
 export class UserModule implements OnModuleInit {
-  constructor(private _seeder: UserSeederService) {}
+    constructor(private _seeder: UserSeederService) {}
 
-  async onModuleInit() {
-    await this._seeder.exec();
-  }
+    async onModuleInit() {
+        await this._seeder.exec();
+    }
 }

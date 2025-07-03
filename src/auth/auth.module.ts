@@ -5,8 +5,8 @@ import { UserModule } from 'src/user/user.module';
 import { JwtModule } from './jwt.config';
 
 @Module({
-  imports: [JwtModule, UserModule],
-  controllers: [AuthController],
-  providers: [AuthService],
+    imports: [JwtModule, UserModule],
+    controllers: [AuthController],
+    providers: [AuthService],
 })
 export class AuthModule {}

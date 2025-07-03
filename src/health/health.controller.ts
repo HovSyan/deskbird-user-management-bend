@@ -3,14 +3,14 @@ import { HealthCheckService, HealthCheck, TypeOrmHealthIndicator } from '@nestjs
 
 @Controller('healthz')
 export class HealthController {
-  constructor(
-    private health: HealthCheckService,
-    private db: TypeOrmHealthIndicator,
-  ) {}
+    constructor(
+        private health: HealthCheckService,
+        private db: TypeOrmHealthIndicator,
+    ) {}
 
-  @Get()
-  @HealthCheck()
-  check() {
-    return this.health.check([() => this.db.pingCheck('database')]);
-  }
+    @Get()
+    @HealthCheck()
+    check() {
+        return this.health.check([() => this.db.pingCheck('database')]);
+    }
 }

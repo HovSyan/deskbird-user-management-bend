@@ -10,38 +10,42 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(User) private _repo: Repository<User>) {}
+    constructor(@InjectRepository(User) private _repo: Repository<User>) {}
 
-  async create(dto: CreateUserDto) {
-    const role = Object.assign(new UserRole(), { id: ROLES.REGULAR });
-    const password = await bcrypt.hash(dto.password, PASSWORD_HASH_SALT_ROUND);
-    const user = Object.assign(new User(), {
-      ...dto,
-      role,
-      password,
-    });
-    return void (await this._repo.insert(user));
-  }
-
-  async update(id: User['id'], dto: UpdateUserDto) {
-    const result = await this._repo.update({ id }, dto);
-    if (result.affected === 0) {
-      throw new NotFoundException(`A user with ${id} not found`);
+    async create(dto: CreateUserDto) {
+        const role = Object.assign(new UserRole(), { id: ROLES.REGULAR });
+        const password = await bcrypt.hash(dto.password, PASSWORD_HASH_SALT_ROUND);
+        const user = Object.assign(new User(), {
+            ...dto,
+            role,
+            password,
+        });
+        return void (await this._repo.insert(user));
     }
-  }
 
-  findAll() {
-    return this._repo.find();
-  }
+    async update(id: User['id'], dto: UpdateUserDto) {
+        const result = await this._repo.update({ id }, dto);
+        if (result.affected === 0) {
+            throw new NotFoundException(`A user with ${id} not found`);
+        }
+    }
 
-  findByEmail(email: string) {
-    return this._repo.findOneBy({ email });
-  }
+    findAll() {
+        return this._repo.find();
+    }
 
-  findByEmailWithCredentials(email: string) {
-    return this._repo.findOne({
-      where: { email },
-      select: this._repo.metadata.columns.map((col) => col.propertyName as keyof User),
-    });
-  }
+    findById(id: string) {
+        return this._repo.findBy({ id });
+    }
+
+    findByEmail(email: string) {
+        return this._repo.findOneBy({ email });
+    }
+
+    findByEmailWithCredentials(email: string) {
+        return this._repo.findOne({
+            where: { email },
+            select: this._repo.metadata.columns.map((col) => col.propertyName as keyof User),
+        });
+    }
 }

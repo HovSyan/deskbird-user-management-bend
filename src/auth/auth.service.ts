@@ -6,22 +6,22 @@ import { JwtPayload } from './types';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private userService: UserService,
-    private jwtService: JwtService,
-  ) {}
+    constructor(
+        private userService: UserService,
+        private jwtService: JwtService,
+    ) {}
 
-  async signIn(email: string, pass: string) {
-    const user = await this.userService.findByEmailWithCredentials(email);
-    const match = await (!!user && bcrypt.compare(pass, user.password!));
-    if (!match || !user) {
-      throw new UnauthorizedException('Invalid credentials');
+    async signIn(email: string, pass: string) {
+        const user = await this.userService.findByEmailWithCredentials(email);
+        const match = await (!!user && bcrypt.compare(pass, user.password!));
+        if (!match || !user) {
+            throw new UnauthorizedException('Invalid credentials');
+        }
+        delete user.password;
+        const payload: JwtPayload = { sub: { id: user.id, role: user.role.id } };
+        return {
+            user,
+            token: await this.jwtService.signAsync(payload),
+        };
     }
-    delete user.password;
-    const payload: JwtPayload = { sub: { id: user.id, role: user.role.id } };
-    return {
-      user,
-      token: await this.jwtService.signAsync(payload),
-    };
-  }
 }

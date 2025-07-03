@@ -6,26 +6,26 @@ import { ConfigModule, ConfigService } from './app.config';
 
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
-  constructor(private _configService: ConfigService) {}
+    constructor(private _configService: ConfigService) {}
 
-  createTypeOrmOptions(): TypeOrmModuleOptions {
-    return {
-      type: 'postgres',
-      entities: [User, UserRole],
-      synchronize: true,
-      logging: ['error'],
-      ssl: this._configService.IS_PRODUCTION,
-      ...this._configService.DB_CONNECTION_OBJECT,
-    };
-  }
+    createTypeOrmOptions(): TypeOrmModuleOptions {
+        return {
+            type: 'postgres',
+            entities: [User, UserRole],
+            synchronize: true,
+            logging: ['error'],
+            ssl: this._configService.IS_PRODUCTION,
+            ...this._configService.DB_CONNECTION_OBJECT,
+        };
+    }
 }
 
 @Module({
-  imports: [
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useClass: TypeOrmConfigService,
-    }),
-  ],
+    imports: [
+        TypeOrmModule.forRootAsync({
+            imports: [ConfigModule],
+            useClass: TypeOrmConfigService,
+        }),
+    ],
 })
 export class DBConnectionModule {}
