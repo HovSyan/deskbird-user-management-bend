@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
@@ -13,6 +13,7 @@ export class UserService {
     constructor(@InjectRepository(User) private _repo: Repository<User>) {}
 
     async create(dto: CreateUserDto) {
+        await this._assertUniqueEmailConstraint(undefined, dto.email);
         const role = Object.assign(new UserRole(), { id: ROLES.REGULAR });
         const password = await bcrypt.hash(dto.password, PASSWORD_HASH_SALT_ROUND);
         const user = Object.assign(new User(), {
@@ -24,9 +25,17 @@ export class UserService {
     }
 
     async update(id: User['id'], dto: UpdateUserDto) {
+        await this._assertUniqueEmailConstraint(id, dto.email);
         const result = await this._repo.update({ id }, dto);
         if (result.affected === 0) {
-            throw new NotFoundException(`A user with ${id} not found`);
+            throw new NotFoundException(this._notFoundExceptionMessage(id));
+        }
+    }
+
+    async delete(id: User['id']) {
+        const result = await this._repo.delete({ id });
+        if (result.affected === 0) {
+            throw new NotFoundException(this._notFoundExceptionMessage(id));
         }
     }
 
@@ -47,5 +56,16 @@ export class UserService {
             where: { email },
             select: this._repo.metadata.columns.map((col) => col.propertyName as keyof User),
         });
+    }
+
+    private _notFoundExceptionMessage(id: User['id']) {
+        return `A user with ${id} not found`;
+    }
+
+    private async _assertUniqueEmailConstraint(id?: User['id'], email?: string) {
+        if (!email) return;
+        const exists = await this._repo.findOneBy({ email });
+        if (!exists) return;
+        if (exists.id !== id) throw new BadRequestException('Email already exists');
     }
 }

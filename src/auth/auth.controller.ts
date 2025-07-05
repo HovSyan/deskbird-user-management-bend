@@ -1,11 +1,13 @@
-import { Body, Controller, Post, HttpCode, HttpStatus, Res } from '@nestjs/common';
+import { Body, Controller, Post, HttpCode, HttpStatus, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
 import { UserService } from 'src/user/user.service';
 import { Response } from 'express';
-import { ACCESS_TOKEN, COOKIE_OPTIONS } from 'src/constants';
+import { ACCESS_TOKEN, COOKIE_OPTIONS, ROLES } from 'src/constants';
 import { tomorrow } from 'src/utils';
+import { AuthGuard } from './auth.guard';
+import { RolesGuard } from './roles.guard';
 
 @Controller('api/v1/auth')
 export class AuthController {
@@ -31,6 +33,13 @@ export class AuthController {
     }
 
     @Post('register')
+    @UseGuards(
+        /**
+         * This is intentional - only authorized admins can register (aka create) users
+         */
+        AuthGuard,
+        RolesGuard(ROLES.ADMIN),
+    )
     signUp(@Body() dto: SignUpDto) {
         return this._userService.create(dto);
     }

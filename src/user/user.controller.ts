@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
@@ -13,7 +13,6 @@ export class UserController {
     constructor(private readonly _userService: UserService) {}
 
     @Get('me')
-    @UseGuards(AuthGuard)
     getMe(@Req() request: Request) {
         const userId = request.jwt_payload!.sub.id;
         return this._userService.findById(userId);
@@ -29,5 +28,12 @@ export class UserController {
     @UseGuards(RolesGuard(ROLES.ADMIN))
     updateOne(@Param('id') id: User['id'], @Body() updateUserDto: UpdateUserDto) {
         return this._userService.update(id, updateUserDto);
+    }
+
+    @HttpCode(HttpStatus.OK)
+    @Delete(':id')
+    @UseGuards(RolesGuard(ROLES.ADMIN))
+    deleteOne(@Param('id') id: User['id']) {
+        return this._userService.delete(id);
     }
 }
