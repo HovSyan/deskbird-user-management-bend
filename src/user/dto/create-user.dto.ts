@@ -3,7 +3,7 @@ import { IsEmail, IsNotEmpty, IsString, Matches } from 'class-validator';
 const passwordRegEx = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 export class CreateUserDto {
-    @IsEmail()
+    @IsEmail({ require_tld: false })
     email: string;
 
     @IsString()
